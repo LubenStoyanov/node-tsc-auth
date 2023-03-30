@@ -1,0 +1,28 @@
+{
+  "name": "tsc-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start:ts": "tsc --watch",
+    "start:js": "nodemon dist/index.js",
+    "start": "concurrently npm:start:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "@types/mongoose": "^5.11.97",
+    "concurrently": "^8.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.3",
+    "nodemon": "^2.0.22"
+  }
+}
