@@ -34,4 +34,6 @@ npm-debug.log
 .env
 
 private.key
-node_modules
+
+dist
+dist-ssr
