@@ -1,4 +1,5 @@
 import Express from "express";
+import { Types } from "mongoose";
 export type Register = {
   email: string;
   username: string;
@@ -13,3 +14,9 @@ export type Login = {
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
 }
+
+export type JWTPayload = {
+  id: Types.ObjectId;
+  username: string;
+  email: string;
+};
