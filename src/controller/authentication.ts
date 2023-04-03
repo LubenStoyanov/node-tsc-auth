@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Register, Login, TypedRequestBody } from "../utils/types.js";
 import { Response } from "express";
-import User from "../models/User.js";
+import User from "../models/user.js";
 import { generateToken } from "../utils/jwt.js";
 
 const saltRounds = 10;
@@ -12,10 +12,9 @@ export const register = async (
 ) => {
   const { username, email, password } = req.body;
   const user = await User.exists({ email: email });
-  console.log(user);
 
   if (user) {
-    return res.status(400).send("User already exists");
+    return res.status(400).json({ message: "User already exists" });
   } else {
     const hash = await bcrypt.hash(password, saltRounds);
     const newUser = await User.create({
@@ -31,12 +30,13 @@ export const register = async (
 
 export const login = async (req: TypedRequestBody<Login>, res: Response) => {
   const { email, password } = req.body;
+  const user = await User.findOne({ email: email });
 
-  const user = await User.findOne({ email: email }, "password");
   if (!user) {
     return res.status(400).send("User not found");
   } else {
     const passwordCorrect = await bcrypt.compare(password, user.password);
+
     if (!passwordCorrect) {
       return res.status(400).send("Incorrect password");
     } else {
@@ -46,10 +46,31 @@ export const login = async (req: TypedRequestBody<Login>, res: Response) => {
         email: user.email,
       });
 
-      console.log(token);
+      res.cookie("token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+      });
+
       return res
         .status(200)
         .json({ message: "Login successful", token: token });
     }
   }
 };
+
+export const logout = async (req: TypedRequestBody<any>, res: Response) => {
+  try {
+    res.clearCookie("token", {
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+    });
+    return res.send("Logout successful").status(200);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// In production, implement nginx to serve secure cookies via https
